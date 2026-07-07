@@ -29,62 +29,64 @@ public class BuscadorShopping extends BuscadorApi {
         List<Producto> listaProductos = new ArrayList<>();
 
         try {
-            // Codificamos el término de búsqueda (ej: "Mario Kart World" -> "Mario+Kart+World")
+            // Codificamos de forma segura el término (ej: "Mario Kart World" -> "Mario+Kart+World")
             String query = URLEncoder.encode(termino, StandardCharsets.UTF_8);
 
-            // Construcción de la URL usando exactamente tus parámetros del Playground
+            // Construcción de la URL inyectando la query ya formateada para internet
             String urlApi = "https://serpapi.com/search.json?engine=google_shopping&q=" + query
                     + "&google_domain=google.cl&gl=cl&hl=es-419&api_key=" + this.apiKey;
 
-            // Configuración del cliente HTTP nativo de Java
-            HttpClient cliente = HttpClient.newHttpClient();
-            HttpRequest peticion = HttpRequest.newBuilder().uri(URI.create(urlApi)).GET().build();
+            try (HttpClient cliente = HttpClient.newHttpClient()) {
 
-            // Enviamos la solicitud al servidor de SerpApi
-            HttpResponse<String> respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+                HttpRequest peticion = HttpRequest.newBuilder().uri(URI.create(urlApi)).GET().build();
 
-            // Convertimos la respuesta de texto plano a un Objeto JSON ejecutable
-            JSONObject jsonCompleto = new JSONObject(respuesta.body());
+                // Envia solicitud al servidor de SerpApi
+                HttpResponse<String> respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
 
-            // 1. Control de Errores de la API según códigos HTTP o respuestas de SerpApi
-            if (respuesta.statusCode() == 401 || jsonCompleto.has("error")) {
-                throw new ApiKeyInvalidaException("La API Key ingresada no es válida o expiró.");
-            }
-            if (respuesta.statusCode() == 429) {
-                throw new LimiteConsultasExcedidoException("Se ha alcanzado el límite de consultas permitidas.");
-            }
+                // Convertimos la respuesta de texto plano a un Objeto JSON ejecutable
+                JSONObject jsonCompleto = new JSONObject(respuesta.body());
 
-            // 2. Verificar si la llave 'shopping_results' existe en el JSON
-            if (!jsonCompleto.has("shopping_results")) {
-                throw new ProductoNoEncontradoException("No se encontraron resultados para: " + termino);
-            }
+                // Control de Errores de la API según códigos HTTP o respuestas de SerpApi
+                if (respuesta.statusCode() == 401 || jsonCompleto.has("error")) {
+                    throw new ApiKeyInvalidaException("La API Key ingresada no es válida o expiró.");
+                }
+                if (respuesta.statusCode() == 429) {
+                    throw new LimiteConsultasExcedidoException("Se ha alcanzado el límite de consultas permitidas.");
+                }
 
-            // 3. Extraer el arreglo de resultados que compartiste en tu JSON
-            JSONArray resultadosJson = jsonCompleto.getJSONArray("shopping_results");
+                // Verificar si la llave 'shopping_results' existe en el JSON
+                if (!jsonCompleto.has("shopping_results")) {
+                    throw new ProductoNoEncontradoException("No se encontraron resultados para: " + termino);
+                }
 
-            // 4. Iterar sobre los productos devueltos por SerpApi
-            for (int i = 0; i < resultadosJson.length(); i++) {
-                JSONObject item = resultadosJson.getJSONObject(i);
+                // Extraer el arreglo de resultados que compartiste en tu JSON
+                JSONArray resultadosJson = jsonCompleto.getJSONArray("shopping_results");
 
-                // Mapeo exacto de las llaves del JSON a variables de Java
-                String nombre = item.getString("title");
-                double precio = item.getDouble("extracted_price"); // Extrae el número limpio sin letras ni comas
-                String tienda = item.getString("source");          // Ej: "Paris.cl", "Lider", "Entel"
-                String link = item.getString("product_link");
-                String imagen = item.getString("thumbnail");       // URL de la imagen en miniatura
+                // Iterar sobre los productos devueltos por SerpApi
+                for (int i = 0; i < resultadosJson.length(); i++) {
+                    JSONObject item = resultadosJson.getJSONObject(i);
 
-                // Instanciamos el objeto Producto y lo añadimos a nuestra lista de resultados
-                listaProductos.add(new Producto(nombre, precio, tienda, link, imagen));
+                    // Mapeo exacto de las llaves del JSON a variables de Java
+                    String nombre = item.getString("title");
+                    double precio = item.getDouble("extracted_price"); // Extrae el número limpio sin letras ni comas
+                    String tienda = item.getString("source");          // Ej: "Paris.cl", "Lider", "Entel"
+
+                    // Reemplaza espacios en blanco automáticos
+                    String link = item.getString("product_link").replace(" ", "%20");
+
+                    String imagen = item.getString("thumbnail");       // URL de la imagen en miniatura
+
+                    // Instanciamos el objeto Producto y lo añadimos a nuestra lista de resultados
+                    listaProductos.add(new Producto(nombre, precio, tienda, link, imagen));
+                }
             }
 
         } catch (ProductoNoEncontradoException | LimiteConsultasExcedidoException | ApiKeyInvalidaException e) {
-            // Dejamos que estas excepciones fluyan hacia afuera de forma limpia y directa
+            // Dejamos que estas excepciones fluyan hacia afuera de forma limpia y directa al Main
             throw e;
         } catch (Exception e) {
             // Aquí capturamos cualquier OTRO error imprevisto (como fallos de internet o JSON mal formado)
             System.err.println("Error inesperado en la comunicación: " + e.getMessage());
-
-            // Para cumplir con la firma del metodo, lanzamos una de nuestras excepciones indicando la falla de conexión
             throw new LimiteConsultasExcedidoException("Error crítico de conexión con SerpApi: " + e.getMessage());
         }
 
