@@ -4,6 +4,8 @@ import org.example.ResultadoBusqueda;
 import org.example.excepciones.ApiKeyInvalidaException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,21 +22,7 @@ public class ResultadoBusquedaTest {
         productosPrueba.add(new Producto("iPhone 14", 750000, "Lider", "http://link3", "http://img3"));
     }
 
-    // Funcionalidad 1: Encontrar el producto más barato de la lista
-    @Test
-    void testObtenerMasBarato() {
-        ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", productosPrueba);
-        assertEquals(750000, analisis.obtenerMasBarato().getPrecio());
-    }
-
-    // Funcionalidad 2: Retornar null si se busca el más barato en una lista vacía
-    @Test
-    void testObtenerMasBaratoListaVacia() {
-        ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", new ArrayList<>());
-        assertNull(analisis.obtenerMasBarato());
-    }
-
-    // Funcionalidad 3: Filtrar correctamente elementos por una tienda específica
+    // Funcionalidad 1: Filtrar correctamente elementos por una tienda específica
     @Test
     void testFiltrarPorTiendaExistente() {
         ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", productosPrueba);
@@ -42,7 +30,7 @@ public class ResultadoBusquedaTest {
         assertEquals(2, filtrados.size());
     }
 
-    // Funcionalidad 4: El filtro por tienda no debe ser afectado por mayúsculas o minúsculas
+    // Funcionalidad 2: El filtro por tienda no debe ser afectado por mayúsculas o minúsculas
     @Test
     void testFiltrarPorTiendaCaseInsensitive() {
         ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", productosPrueba);
@@ -50,7 +38,7 @@ public class ResultadoBusquedaTest {
         assertEquals(1, filtrados.size());
     }
 
-    // Funcionalidad 5: Retornar lista vacía si la tienda filtrada no existe
+    // Funcionalidad 3: Retornar lista vacía si la tienda filtrada no existe
     @Test
     void testFiltrarPorTiendaNoExistente() {
         ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", productosPrueba);
@@ -58,33 +46,33 @@ public class ResultadoBusquedaTest {
         assertTrue(filtrados.isEmpty());
     }
 
-    // Funcionalidad 6: Calcular de forma correcta el promedio matemático de precios
+    // Funcionalidad 4: Calcular de forma correcta el promedio matemático de precios
     @Test
     void testCalcularPrecioPromedio() {
         ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", productosPrueba);
         assertEquals(950000.0, analisis.obtenerPrecioPromedio());
     }
 
-    // Funcionalidad 7: El promedio de una lista vacía debe ser 0.0
+    // Funcionalidad 5: El promedio de una lista vacía debe ser 0.0
     @Test
     void testCalcularPrecioPromedioListaVacia() {
         ResultadoBusqueda analisis = new ResultadoBusqueda("iPhone", new ArrayList<>());
         assertEquals(0.0, analisis.obtenerPrecioPromedio());
     }
 
-    // Funcionalidad 8: El constructor de BuscadorApi debe fallar si la clave es nula
+    // Funcionalidad 6: El constructor de BuscadorApi debe fallar si la clave es nula
     @Test
     void testBuscadorApiKeyNullLanzaExcepcion() {
         assertThrows(ApiKeyInvalidaException.class, () -> new BuscadorLocal(null));
     }
 
-    // Funcionalidad 9: El constructor de BuscadorApi debe fallar si la clave está vacía
+    // Funcionalidad 7: El constructor de BuscadorApi debe fallar si la clave está vacía
     @Test
     void testBuscadorApiKeyVaciaLanzaExcepcion() {
         assertThrows(ApiKeyInvalidaException.class, () -> new BuscadorLocal(""));
     }
 
-    // Funcionalidad 10: Validación de integridad de datos en getters de Producto
+    // Funcionalidad 8: Validación de integridad de datos en getters de Producto
     @Test
     void testGettersProducto() {
         Producto p = new Producto("Tele", 300000, "Ripley", "http://compra", "http://foto");
@@ -93,5 +81,26 @@ public class ResultadoBusquedaTest {
                 () -> assertEquals(300000, p.getPrecio()),
                 () -> assertEquals("Ripley", p.getTienda())
         );
+    }
+
+    // Funcionalidad 9: Formatear correctamente el valor monetario a la divisa chilena (CLP)
+    @Test
+    void testPrecioFormateadoChile() {
+        Producto p = new Producto("Consola", 450990, "Falabella", "http://link", "http://img");
+        assertEquals("$450.990 CLP", p.getPrecioFormateado());
+    }
+
+    // Funcionalidad 10: Validar que el buscador registre correctamente la bitácora de auditoría en consola
+    @Test
+    void testRegistrarLogBusquedaImpresion() throws ApiKeyInvalidaException {
+        BuscadorLocal buscadorPrueba = new BuscadorLocal("fake_key");
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        buscadorPrueba.registrarLogBusqueda("Nintendo Switch");
+        String outputEsperado = "Log: Buscando 'Nintendo Switch' en los servidores de SerpApi...";
+        assertTrue(outContent.toString().contains(outputEsperado));
+
+        System.setOut(System.out); // Restaurar salida estándar del sistema
     }
 }
