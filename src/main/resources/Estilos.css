@@ -1,0 +1,162 @@
+/* Asignamos el fondo CONTINUO únicamente a la raíz del programa */
+.root {
+    -fx-background-color: #FDF6EC; /* Crema suave de fondo capybara */
+    -fx-background-image: url("/Capy_final.png"); /* Imagen unificada con ruta correcta */
+    -fx-background-repeat: repeat; /* Hace que se repita en toda la pantalla de forma fluida */
+    -fx-background-size: 110px 110px; /* Tamaño ideal para que el capibara individual luzca nítido */
+}
+
+/* Forzamos transparencia en todas las subsecciones para no fragmentar el fondo */
+.header-panel, .grid-background, .footer-panel {
+    -fx-background-color: transparent;
+}
+
+.scroll-panel {
+    -fx-background-color: transparent;
+    -fx-pane-background: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Letrero Blanco del Logo (Caja con Sombra del Boceto) */
+.logo-badge {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15;
+    -fx-padding: 10 50 10 50;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5C3A21; /* Café oscuro */
+    -fx-effect: dropshadow(three-pass-box, rgba(92,58,33,0.12), 8, 0, 0, 4);
+}
+
+/* Barra de Búsqueda Redondeada */
+.search-bar {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #D4A373;
+    -fx-border-width: 2;
+    -fx-pref-width: 450;
+    -fx-pref-height: 42;
+    -fx-padding: 0 15 0 15;
+    -fx-background-color: #FFFFFF;
+    -fx-font-size: 14px;
+}
+
+/* Botón Lupa */
+.search-button {
+    -fx-background-radius: 20;
+    -fx-background-color: #5C3A21;
+    -fx-text-fill: white;
+    -fx-pref-height: 42;
+    -fx-pref-width: 55;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+.search-button:hover {
+    -fx-background-color: #7A4F31;
+}
+
+/* Banner Anaranjado Informativo */
+.orange-banner {
+    -fx-background-color: #F4A261; /* Naranja pastel de la interfaz */
+    -fx-background-radius: 15;
+    -fx-padding: 15 30 15 30;
+    -fx-max-width: 750;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 6, 0, 0, 2);
+}
+
+/* Tarjetas de Producto Estilo Cuadrícula de IA */
+.product-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #E6CCB2;
+    -fx-border-width: 1.5;
+    -fx-padding: 20;
+    -fx-pref-width: 280;
+    -fx-max-width: 280;
+    -fx-effect: dropshadow(three-pass-box, rgba(92,58,33,0.08), 15, 0, 0, 6);
+}
+
+.product-title {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4A4A4A;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-max-height: 45;
+    -fx-pref-height: 45;
+}
+
+.product-price {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #B07D62; /* Café rojizo */
+    -fx-font-weight: bold;
+}
+
+.product-store {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7F7F7F;
+}
+
+/* Botón "Ver Oferta" */
+.card-button {
+    -fx-background-color: #9C6644;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 8 22 8 22;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.card-button:hover {
+    -fx-background-color: #7F5539;
+}
+
+/* Pie de Página */
+.footer-text {
+    -fx-background-color: #E6CCB2;
+    -fx-background-radius: 15;
+    -fx-padding: 6 25 6 25;
+    -fx-text-fill: #5C3A21;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Caja flotante para mensajes de error o advertencia en la cuadrícula */
+.error-box {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15;
+    -fx-padding: 20 40 20 40;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(92,58,33,0.1), 10, 0, 0, 4);
+}
+
+/* Estilos para la Vista de Detalle (Pantalla 3 del boceto) */
+.detail-box {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(92,58,33,0.1), 15, 0, 0, 6);
+}
+
+.offer-row {
+    -fx-background-color: #FDF6EC;
+    -fx-background-radius: 12;
+    -fx-padding: 12 20 12 20;
+    -fx-alignment: center-left;
+}
+
+.back-button {
+    -fx-background-color: #D4A373;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 6 15 6 15;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.back-button:hover {
+    -fx-background-color: #B07D62;
+}
