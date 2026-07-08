@@ -31,7 +31,7 @@ public class BuscadorShopping extends BuscadorApi {
         List<Producto> listaProductos = new ArrayList<>();
 
         try {
-            String query = URLEncoder.encode(termino, StandardCharsets.UTF_8).replace("+", "%20");
+            String query = URLEncoder.encode(termino, StandardCharsets.UTF_8).replace("+", "%20").toLowerCase();
 
             // 🛠️ Optimizamos agregando &num=20 al final de la URL
             String urlApi = "https://serpapi.com/search.json?engine=google_shopping&q=" + query
